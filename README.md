@@ -1,2 +1,2 @@
-# portfolio
-files for website upload
+# Asher Friedman's Portfolio
+Git Portfolio for Personal Website
