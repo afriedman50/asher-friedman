@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Asher Friedman</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300;1,9..40,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #faf7f2;
+      --bg2:        #f0e9de;
+      --navy:       #17305a;
+      --blue:       #2b6cb0;
+      --blue-mid:   #4a90d9;
+      --blue-light: #a8cce8;
+      --blue-pale:  #e4f0fb;
+      --amber:      #c87941;
+      --text:       #1c1c1e;
+      --muted:      #6b7280;
+      --white:      #ffffff;
+      --nav-h:      72px;
+      --pad:        100px;
+      --font-d:     'DM Serif Display', Georgia, serif;
+      --font-b:     'DM Sans', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-b);
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* ── CURSOR ── */
+    #cursor {
+      position: fixed; top: 0; left: 0;
+      width: 10px; height: 10px;
+      background: var(--blue);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%,-50%);
+      transition: background .2s, transform .15s;
+    }
+    #cursor-ring {
+      position: fixed; top: 0; left: 0;
+      width: 34px; height: 34px;
+      border: 1.5px solid var(--blue-mid);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%,-50%);
+      opacity: .55;
+      transition: opacity .2s;
+    }
+    body.hovered #cursor { transform: translate(-50%,-50%) scale(2.2); background: var(--amber); }
+    body.hovered #cursor-ring { opacity: 0; }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: var(--nav-h);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 56px;
+      z-index: 100;
+      transition: background .3s, box-shadow .3s;
+    }
+    nav.scrolled {
+      background: rgba(250,247,242,.93);
+      backdrop-filter: blur(14px);
+      box-shadow: 0 1px 0 rgba(0,0,0,.07);
+    }
+    .nav-logo {
+      font-family: var(--font-d);
+      font-size: 1.3rem;
+      color: var(--navy);
+      text-decoration: none;
+      letter-spacing: -.02em;
+    }
+    .nav-links { display: flex; gap: 36px; list-style: none; }
+    .nav-links a {
+      font-size: .82rem; font-weight: 500;
+      letter-spacing: .08em; text-transform: uppercase;
+      color: var(--muted); text-decoration: none;
+      position: relative; transition: color .2s;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute;
+      bottom: -3px; left: 0; width: 0; height: 1.5px;
+      background: var(--blue);
+      transition: width .25s ease;
+    }
+    .nav-links a:hover { color: var(--blue); }
+    .nav-links a:hover::after { width: 100%; }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      padding-top: var(--nav-h);
+      position: relative;
+      overflow: hidden;
+    }
+    .blobs { position: absolute; inset: 0; pointer-events: none; }
+    .blob {
+      position: absolute; border-radius: 50%;
+      filter: blur(90px); opacity: .22;
+      animation: drift 14s ease-in-out infinite alternate;
+    }
+    .blob-a { width:500px;height:500px;background:var(--blue-mid);  top:-120px;right:-80px; animation-delay:0s; }
+    .blob-b { width:300px;height:300px;background:var(--amber);      bottom:80px;left:28%; animation-delay:-5s; }
+    .blob-c { width:220px;height:220px;background:var(--blue-light); top:42%;left:-50px;   animation-delay:-10s; }
+    @keyframes drift {
+      from { transform: translate(0,0) scale(1); }
+      to   { transform: translate(28px,18px) scale(1.1); }
+    }
+
+    .hero-left {
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 80px 56px 80px 80px;
+      position: relative; z-index: 1;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-size: .75rem; font-weight: 600;
+      letter-spacing: .12em; text-transform: uppercase;
+      color: var(--blue); margin-bottom: 28px;
+    }
+    .hero-eyebrow::before {
+      content: ''; display: block;
+      width: 28px; height: 1.5px; background: var(--blue);
+    }
+    .hero-name {
+      font-family: var(--font-d);
+      font-size: clamp(3.6rem, 6.5vw, 5.6rem);
+      line-height: 1.0; letter-spacing: -.03em;
+      color: var(--navy); margin-bottom: 22px;
+    }
+    .hero-name em { font-style: italic; color: var(--blue); }
+
+    .hero-role {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1.1rem; color: var(--muted);
+      font-weight: 400; margin-bottom: 48px;
+    }
+    .role-slot {
+      display: inline-block; overflow: hidden;
+      height: 1.45em; line-height: 1.45;
+    }
+    .role-reel {
+      display: flex; flex-direction: column;
+      animation: reel 9s ease-in-out infinite;
+    }
+    .role-reel span { white-space: nowrap; font-weight: 600; color: var(--text); }
+    @keyframes reel {
+      0%,18%  { transform: translateY(0); }
+      25%,43% { transform: translateY(-1.45em); }
+      50%,68% { transform: translateY(-2.90em); }
+      75%,93% { transform: translateY(-4.35em); }
+      100%    { transform: translateY(0); }
+    }
+
+    .hero-btns { display: flex; gap: 14px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 13px 28px; border-radius: 50px;
+      font-family: var(--font-b); font-size: .88rem; font-weight: 600;
+      text-decoration: none; border: none; cursor: none;
+      transition: transform .2s, box-shadow .2s, background .2s;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-solid {
+      background: var(--navy); color: var(--white);
+      box-shadow: 0 4px 20px rgba(23,48,90,.28);
+    }
+    .btn-solid:hover { box-shadow: 0 8px 32px rgba(23,48,90,.38); }
+    .btn-ghost {
+      background: transparent; color: var(--navy);
+      border: 1.5px solid rgba(23,48,90,.35);
+    }
+    .btn-ghost:hover { background: var(--bg2); }
+
+    .hero-right {
+      display: flex; align-items: center; justify-content: center;
+      padding: 80px 80px 80px 40px;
+      position: relative; z-index: 1;
+    }
+    .info-card {
+      background: var(--white); border-radius: 22px;
+      padding: 36px; max-width: 360px; width: 100%;
+      box-shadow: 0 8px 48px rgba(23,48,90,.11);
+      position: relative;
+    }
+    .info-card::before {
+      content: '';
+      position: absolute; inset: -2px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, var(--blue-light) 0%, rgba(200,121,65,.4) 100%);
+      z-index: -1;
+    }
+    .ic-row { margin-bottom: 18px; }
+    .ic-label {
+      font-size: .68rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: .1em;
+      color: var(--muted); margin-bottom: 4px;
+    }
+    .ic-val { font-size: .93rem; font-weight: 500; color: var(--text); }
+    .ic-sep { height: 1px; background: var(--bg2); margin: 18px 0; }
+    .ic-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+    .chip {
+      padding: 5px 13px; border-radius: 50px;
+      font-size: .76rem; font-weight: 500;
+    }
+    .chip-blue { background: var(--blue-pale); color: var(--blue); }
+    .chip-warm { background: #fdf0e4; color: var(--amber); }
+
+    .scroll-cue {
+      position: absolute; bottom: 32px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      font-size: .7rem; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--muted); animation: bob 2s ease-in-out infinite;
+    }
+    @keyframes bob {
+      0%,100% { transform: translateX(-50%) translateY(0); }
+      50%      { transform: translateX(-50%) translateY(7px); }
+    }
+
+    /* ── WAVE DIVIDERS ── */
+    .wave { width: 100%; overflow: hidden; line-height: 0; display: block; }
+    .wave svg { display: block; width: 100%; }
+
+    /* ── SECTION BASE ── */
+    section { padding: var(--pad) 80px; position: relative; }
+
+    .s-head {
+      display: flex; align-items: baseline; gap: 16px;
+      margin-bottom: 60px;
+    }
+    .s-num {
+      font-size: .76rem; font-weight: 700;
+      letter-spacing: .1em; color: var(--blue);
+    }
+    .s-title {
+      font-family: var(--font-d);
+      font-size: clamp(2rem, 3.8vw, 2.8rem);
+      color: var(--navy); letter-spacing: -.02em;
+    }
+    .s-title em { font-style: italic; color: var(--blue); }
+    .s-line {
+      flex: 1; height: 1px;
+      background: linear-gradient(to right, var(--blue-light), transparent);
+    }
+
+    /* ── ABOUT ── */
+    #about { background: var(--bg); }
+    .about-grid {
+      display: grid; grid-template-columns: 1.1fr 1fr;
+      gap: 80px; align-items: start;
+    }
+    .about-body p {
+      font-size: 1.05rem; line-height: 1.85;
+      color: var(--text); margin-bottom: 18px;
+      font-weight: 300;
+    }
+    .about-body strong { font-weight: 600; color: var(--navy); }
+    .about-cards {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .a-card {
+      background: var(--white); border-radius: 16px;
+      padding: 22px; border: 1px solid rgba(43,108,176,.1);
+      transition: transform .22s, box-shadow .22s;
+    }
+    .a-card:hover { transform: translateY(-4px); box-shadow: 0 10px 32px rgba(23,48,90,.1); }
+    .a-card-icon { font-size: 1.4rem; margin-bottom: 8px; }
+    .a-card-title { font-weight: 600; font-size: .88rem; color: var(--navy); margin-bottom: 3px; }
+    .a-card-sub   { font-size: .78rem; color: var(--muted); line-height: 1.5; }
+
+    /* ── PROJECTS ── */
+    #projects { background: var(--bg2); }
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+    }
+    .p-card {
+      background: var(--white); border-radius: 20px;
+      overflow: hidden;
+      transition: transform .3s cubic-bezier(.34,1.56,.64,1), box-shadow .3s;
+      transform-style: preserve-3d;
+    }
+    .p-card:hover { box-shadow: 0 20px 60px rgba(23,48,90,.14); }
+    .p-card.span2 { grid-column: span 2; }
+
+    .p-thumb {
+      width: 100%; height: 200px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .p-card.span2 .p-thumb { height: 260px; }
+
+    .p-body { padding: 24px; }
+    .p-meta { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .p-badge {
+      font-size: .68rem; font-weight: 600;
+      text-transform: uppercase; letter-spacing: .07em;
+      padding: 3px 10px; border-radius: 50px;
+    }
+    .badge-group    { background: var(--blue-pale); color: var(--blue); }
+    .badge-personal { background: #fdf0e4; color: var(--amber); }
+    .p-title {
+      font-family: var(--font-d); font-size: 1.25rem;
+      color: var(--navy); margin-bottom: 8px; letter-spacing: -.01em;
+    }
+    .p-desc { font-size: .84rem; color: var(--muted); line-height: 1.75; margin-bottom: 16px; }
+    .p-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .p-tag {
+      font-size: .72rem; padding: 3px 10px;
+      border-radius: 50px; background: var(--bg); color: var(--muted); font-weight: 500;
+    }
+
+    /* ── SKILLS ── */
+    #skills { background: var(--bg); }
+    .skills-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+    .sk-card {
+      background: var(--white); border-radius: 20px;
+      padding: 30px; border: 1px solid rgba(43,108,176,.09);
+      transition: transform .22s;
+    }
+    .sk-card:hover { transform: translateY(-4px); }
+    .sk-head { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .sk-icon {
+      width: 42px; height: 42px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+    }
+    .sk-icon.eng    { background: var(--blue-pale); }
+    .sk-icon.design { background: #fdf0e4; }
+    .sk-icon.music  { background: #f0fdf4; }
+    .sk-icon.fab    { background: #fdf4ff; }
+    .sk-title { font-weight: 600; font-size: .95rem; color: var(--navy); }
+    .sk-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .sk-chip {
+      padding: 6px 14px; border-radius: 8px;
+      font-size: .8rem; font-weight: 500;
+      background: var(--bg); color: var(--text);
+      border: 1px solid transparent;
+      transition: all .18s;
+    }
+    .sk-chip:hover {
+      border-color: var(--blue-light);
+      background: var(--blue-pale);
+      color: var(--blue);
+    }
+
+    /* ── CONTACT ── */
+    #contact { background: var(--bg2); }
+    .contact-wrap { max-width: 660px; margin: 0 auto; text-align: center; }
+    .contact-lede {
+      font-size: 1.02rem; color: var(--muted);
+      line-height: 1.85; margin-bottom: 38px;
+      font-weight: 300;
+    }
+    .contact-email {
+      font-family: var(--font-d);
+      font-size: clamp(1.5rem, 3vw, 2.1rem);
+      color: var(--navy); text-decoration: none;
+      border-bottom: 2px solid var(--blue-light);
+      transition: border-color .2s, color .2s;
+      display: inline-block; margin-bottom: 48px;
+    }
+    .contact-email:hover { color: var(--blue); border-color: var(--blue); }
+    .socials { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+    .social-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 11px 22px; border-radius: 50px;
+      border: 1.5px solid rgba(23,48,90,.18);
+      text-decoration: none; color: var(--navy);
+      font-size: .85rem; font-weight: 500;
+      transition: all .2s;
+    }
+    .social-btn:hover { background: var(--navy); color: var(--white); border-color: var(--navy); }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--navy); color: var(--blue-light);
+      text-align: center; padding: 28px;
+      font-size: .8rem; letter-spacing: .04em;
+    }
+    footer span { color: var(--amber); }
+
+    /* ── FADE-UP ── */
+    .fade {
+      opacity: 0; transform: translateY(28px);
+      transition: opacity .65s ease, transform .65s ease;
+    }
+    .fade.in { opacity: 1; transform: translateY(0); }
+    .fade:nth-child(2) { transition-delay: .1s; }
+    .fade:nth-child(3) { transition-delay: .2s; }
+    .fade:nth-child(4) { transition-delay: .3s; }
+    .fade:nth-child(5) { transition-delay: .4s; }
+    .fade:nth-child(6) { transition-delay: .5s; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 960px) {
+      nav { padding: 0 24px; }
+      .nav-links { display: none; }
+      #hero { grid-template-columns: 1fr; }
+      .hero-right { display: none; }
+      .hero-left { padding: 60px 28px; }
+      section { padding: 72px 28px; }
+      .about-grid { grid-template-columns: 1fr; gap: 40px; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .p-card.span2 { grid-column: span 1; }
+      .skills-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#hero" class="nav-logo">AF</a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="blobs">
+    <div class="blob blob-a"></div>
+    <div class="blob blob-b"></div>
+    <div class="blob blob-c"></div>
+  </div>
+
+  <div class="hero-left">
+    <div class="hero-eyebrow">Georgia Tech · Class of 2027</div>
+    <h1 class="hero-name">Asher<br><em>Friedman</em></h1>
+    <p class="hero-role">
+      I'm an&nbsp;
+      <span class="role-slot">
+        <span class="role-reel">
+          <span>Engineer</span>
+          <span>Designer</span>
+          <span>Musician</span>
+          <span>Artist</span>
+        </span>
+      </span>
+    </p>
+    <div class="hero-btns">
+      <a href="#projects" class="btn btn-solid">See my work</a>
+      <a href="#contact"  class="btn btn-ghost">Get in touch</a>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="info-card">
+      <div class="ic-row">
+        <div class="ic-label">Studying</div>
+        <div class="ic-val">Mechanical Engineering + Industrial Design</div>
+      </div>
+      <div class="ic-sep"></div>
+      <div class="ic-row">
+        <div class="ic-label">Where</div>
+        <div class="ic-val">Atlanta, GA · 3rd Year</div>
+      </div>
+      <div class="ic-sep"></div>
+      <div class="ic-label">Beyond the classroom</div>
+      <div class="ic-chips">
+        <span class="chip chip-blue">🎸 Musician</span>
+        <span class="chip chip-warm">🎨 Artist</span>
+        <span class="chip chip-blue">⚙️ Maker</span>
+        <span class="chip chip-warm">✏️ Sketcher</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-cue">
+    <svg width="14" height="22" viewBox="0 0 14 22" fill="none">
+      <rect x="1" y="1" width="12" height="20" rx="6" stroke="currentColor" stroke-width="1.4"/>
+      <circle cx="7" cy="7" r="1.8" fill="currentColor">
+        <animate attributeName="cy" values="7;13;7" dur="1.8s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="1;0;1" dur="1.8s" repeatCount="indefinite"/>
+      </circle>
+    </svg>
+    scroll
+  </div>
+</section>
+
+<!-- WAVE: bg → bg2 -->
+<div class="wave" style="background:#f0e9de">
+  <svg viewBox="0 0 1440 56" preserveAspectRatio="none" height="56">
+    <path d="M0,0 C480,56 960,0 1440,56 L1440,0 Z" fill="#faf7f2"/>
+  </svg>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="s-head">
+    <span class="s-num">01</span>
+    <h2 class="s-title">About <em>me</em></h2>
+    <div class="s-line"></div>
+  </div>
+  <div class="about-grid">
+    <div class="about-body fade">
+      <p>Hey — I'm Asher, a <strong>Mechanical Engineering</strong> student at <strong>Georgia Tech</strong> with a minor in <strong>Industrial Design</strong>. I'm in my third year and constantly fascinated by the overlap between how things work and how they feel to use.</p>
+      <p>I approach every project with an engineer's rigor and a designer's eye. Whether I'm running stress analysis on a structural component or sketching out a product from scratch, I'm always thinking about the person on the other end of it.</p>
+      <p>When I'm not in the lab or studio, I play guitar and piano, make visual art, and find ways to keep building. I pull inspiration from all of it — creativity in engineering comes from everywhere.</p>
+    </div>
+    <div class="about-cards">
+      <div class="a-card fade">
+        <div class="a-card-icon">🏫</div>
+        <div class="a-card-title">Georgia Tech</div>
+        <div class="a-card-sub">ME + Industrial Design<br>Class of 2027</div>
+      </div>
+      <div class="a-card fade">
+        <div class="a-card-icon">⚙️</div>
+        <div class="a-card-title">Engineer</div>
+        <div class="a-card-sub">Mechanical systems, CAD, fabrication &amp; analysis</div>
+      </div>
+      <div class="a-card fade">
+        <div class="a-card-icon">✏️</div>
+        <div class="a-card-title">Designer</div>
+        <div class="a-card-sub">Industrial design, human-centered thinking</div>
+      </div>
+      <div class="a-card fade">
+        <div class="a-card-icon">🎸</div>
+        <div class="a-card-title">Musician &amp; Artist</div>
+        <div class="a-card-sub">Guitar, piano, visual art &amp; illustration</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WAVE: bg → bg2 -->
+<div class="wave" style="background:#faf7f2">
+  <svg viewBox="0 0 1440 56" preserveAspectRatio="none" height="56">
+    <path d="M0,56 C480,0 960,56 1440,0 L1440,56 Z" fill="#f0e9de"/>
+  </svg>
+</div>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="s-head">
+    <span class="s-num">02</span>
+    <h2 class="s-title">Projects</h2>
+    <div class="s-line"></div>
+  </div>
+
+  <div class="projects-grid">
+
+    <!-- Project slot 1 (featured) -->
+    <div class="p-card span2 fade">
+      <div class="p-thumb" style="background:var(--bg2); border-bottom:1px solid rgba(43,108,176,.1)">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" opacity=".25">
+          <rect x="1" y="1" width="38" height="38" rx="6" stroke="#2b6cb0" stroke-width="1.5" stroke-dasharray="5,4"/>
+          <line x1="20" y1="10" x2="20" y2="30" stroke="#2b6cb0" stroke-width="1.5"/>
+          <line x1="10" y1="20" x2="30" y2="20" stroke="#2b6cb0" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div class="p-body">
+        <div class="p-meta"><span class="p-badge badge-group" style="opacity:.45">Type · Context</span></div>
+        <div class="p-title" style="color:var(--muted)">Project Title</div>
+        <p class="p-desc" style="opacity:.5">Description coming soon.</p>
+        <div class="p-tags">
+          <span class="p-tag" style="opacity:.4">Tag</span>
+          <span class="p-tag" style="opacity:.4">Tag</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Project slot 2 -->
+    <div class="p-card fade">
+      <div class="p-thumb" style="background:var(--bg2); border-bottom:1px solid rgba(43,108,176,.1)">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" opacity=".25">
+          <rect x="1" y="1" width="38" height="38" rx="6" stroke="#2b6cb0" stroke-width="1.5" stroke-dasharray="5,4"/>
+          <line x1="20" y1="10" x2="20" y2="30" stroke="#2b6cb0" stroke-width="1.5"/>
+          <line x1="10" y1="20" x2="30" y2="20" stroke="#2b6cb0" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div class="p-body">
+        <div class="p-meta"><span class="p-badge badge-personal" style="opacity:.45">Type · Context</span></div>
+        <div class="p-title" style="color:var(--muted)">Project Title</div>
+        <p class="p-desc" style="opacity:.5">Description coming soon.</p>
+        <div class="p-tags">
+          <span class="p-tag" style="opacity:.4">Tag</span>
+          <span class="p-tag" style="opacity:.4">Tag</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Project slot 3 -->
+    <div class="p-card fade">
+      <div class="p-thumb" style="background:var(--bg2); border-bottom:1px solid rgba(43,108,176,.1)">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" opacity=".25">
+          <rect x="1" y="1" width="38" height="38" rx="6" stroke="#2b6cb0" stroke-width="1.5" stroke-dasharray="5,4"/>
+          <line x1="20" y1="10" x2="20" y2="30" stroke="#2b6cb0" stroke-width="1.5"/>
+          <line x1="10" y1="20" x2="30" y2="20" stroke="#2b6cb0" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div class="p-body">
+        <div class="p-meta"><span class="p-badge badge-group" style="opacity:.45">Type · Context</span></div>
+        <div class="p-title" style="color:var(--muted)">Project Title</div>
+        <p class="p-desc" style="opacity:.5">Description coming soon.</p>
+        <div class="p-tags">
+          <span class="p-tag" style="opacity:.4">Tag</span>
+          <span class="p-tag" style="opacity:.4">Tag</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Project slot 4 -->
+    <div class="p-card fade">
+      <div class="p-thumb" style="background:var(--bg2); border-bottom:1px solid rgba(43,108,176,.1)">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" opacity=".25">
+          <rect x="1" y="1" width="38" height="38" rx="6" stroke="#2b6cb0" stroke-width="1.5" stroke-dasharray="5,4"/>
+          <line x1="20" y1="10" x2="20" y2="30" stroke="#2b6cb0" stroke-width="1.5"/>
+          <line x1="10" y1="20" x2="30" y2="20" stroke="#2b6cb0" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div class="p-body">
+        <div class="p-meta"><span class="p-badge badge-personal" style="opacity:.45">Type · Context</span></div>
+        <div class="p-title" style="color:var(--muted)">Project Title</div>
+        <p class="p-desc" style="opacity:.5">Description coming soon.</p>
+        <div class="p-tags">
+          <span class="p-tag" style="opacity:.4">Tag</span>
+          <span class="p-tag" style="opacity:.4">Tag</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Project slot 5 -->
+    <div class="p-card fade">
+      <div class="p-thumb" style="background:var(--bg2); border-bottom:1px solid rgba(43,108,176,.1)">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" opacity=".25">
+          <rect x="1" y="1" width="38" height="38" rx="6" stroke="#2b6cb0" stroke-width="1.5" stroke-dasharray="5,4"/>
+          <line x1="20" y1="10" x2="20" y2="30" stroke="#2b6cb0" stroke-width="1.5"/>
+          <line x1="10" y1="20" x2="30" y2="20" stroke="#2b6cb0" stroke-width="1.5"/>
+        </svg>
+      </div>
+      <div class="p-body">
+        <div class="p-meta"><span class="p-badge badge-personal" style="opacity:.45">Type · Context</span></div>
+        <div class="p-title" style="color:var(--muted)">Project Title</div>
+        <p class="p-desc" style="opacity:.5">Description coming soon.</p>
+        <div class="p-tags">
+          <span class="p-tag" style="opacity:.4">Tag</span>
+          <span class="p-tag" style="opacity:.4">Tag</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- WAVE: bg2 → bg -->
+<div class="wave" style="background:#faf7f2">
+  <svg viewBox="0 0 1440 56" preserveAspectRatio="none" height="56">
+    <path d="M0,0 C480,56 960,0 1440,56 L1440,0 Z" fill="#f0e9de"/>
+  </svg>
+</div>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="s-head">
+    <span class="s-num">03</span>
+    <h2 class="s-title">Skills &amp; <em>Tools</em></h2>
+    <div class="s-line"></div>
+  </div>
+  <div class="skills-grid">
+
+    <div class="sk-card fade">
+      <div class="sk-head">
+        <div class="sk-icon eng">⚙️</div>
+        <div class="sk-title">Mechanical Engineering</div>
+      </div>
+      <div class="sk-chips">
+        <span class="sk-chip">SolidWorks</span>
+        <span class="sk-chip">MATLAB</span>
+        <span class="sk-chip">FEA / ANSYS</span>
+        <span class="sk-chip">Thermodynamics</span>
+        <span class="sk-chip">Statics &amp; Dynamics</span>
+        <span class="sk-chip">GD&amp;T</span>
+        <span class="sk-chip">Heat Transfer</span>
+        <span class="sk-chip">Engineering Drawings</span>
+      </div>
+    </div>
+
+    <div class="sk-card fade">
+      <div class="sk-head">
+        <div class="sk-icon design">✏️</div>
+        <div class="sk-title">Industrial Design</div>
+      </div>
+      <div class="sk-chips">
+        <span class="sk-chip">Rhino 3D</span>
+        <span class="sk-chip">Industrial Sketching</span>
+        <span class="sk-chip">Adobe Illustrator</span>
+        <span class="sk-chip">Adobe Photoshop</span>
+        <span class="sk-chip">Prototyping</span>
+        <span class="sk-chip">Concept Ideation</span>
+        <span class="sk-chip">User Research</span>
+      </div>
+    </div>
+
+    <div class="sk-card fade">
+      <div class="sk-head">
+        <div class="sk-icon music">🎵</div>
+        <div class="sk-title">Music &amp; Visual Art</div>
+      </div>
+      <div class="sk-chips">
+        <span class="sk-chip">Guitar</span>
+        <span class="sk-chip">Piano</span>
+        <span class="sk-chip">Music Theory</span>
+        <span class="sk-chip">Songwriting</span>
+        <span class="sk-chip">GarageBand</span>
+        <span class="sk-chip">Drawing &amp; Illustration</span>
+        <span class="sk-chip">Visual Composition</span>
+      </div>
+    </div>
+
+    <div class="sk-card fade">
+      <div class="sk-head">
+        <div class="sk-icon fab">🛠️</div>
+        <div class="sk-title">Fabrication &amp; Tools</div>
+      </div>
+      <div class="sk-chips">
+        <span class="sk-chip">3D Printing</span>
+        <span class="sk-chip">Laser Cutting</span>
+        <span class="sk-chip">CNC Machining</span>
+        <span class="sk-chip">Welding</span>
+        <span class="sk-chip">Python</span>
+        <span class="sk-chip">Arduino</span>
+        <span class="sk-chip">Hand Tools</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- WAVE: bg → bg2 -->
+<div class="wave" style="background:#f0e9de">
+  <svg viewBox="0 0 1440 56" preserveAspectRatio="none" height="56">
+    <path d="M0,56 C480,0 960,56 1440,0 L1440,56 Z" fill="#faf7f2"/>
+  </svg>
+</div>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="s-head">
+    <span class="s-num">04</span>
+    <h2 class="s-title">Let's <em>connect</em></h2>
+    <div class="s-line"></div>
+  </div>
+  <div class="contact-wrap fade">
+    <p class="contact-lede">Whether you want to talk engineering, design, music, or just swap ideas — my inbox is always open. Especially excited to hear about interesting projects, internships, or collaborations.</p>
+    <a href="mailto:asherfried05@gmail.com" class="contact-email">asherfried05@gmail.com</a>
+    <div class="socials">
+      <!-- Update these href values with your real profile links -->
+      <a href="#" class="social-btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+        GitHub
+      </a>
+      <a href="#" class="social-btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+        LinkedIn
+      </a>
+      <a href="mailto:asherfried05@gmail.com" class="social-btn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,12 2,6"/></svg>
+        Email
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>Designed &amp; built by <span>Asher Friedman</span> · Georgia Tech · 2026</p>
+</footer>
+
+<script>
+  /* ── cursor ── */
+  const dot  = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    dot.style.left = mx + 'px';
+    dot.style.top  = my + 'px';
+  });
+
+  (function tickRing() {
+    rx += (mx - rx) * 0.11;
+    ry += (my - ry) * 0.11;
+    ring.style.left = rx + 'px';
+    ring.style.top  = ry + 'px';
+    requestAnimationFrame(tickRing);
+  })();
+
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => document.body.classList.add('hovered'));
+    el.addEventListener('mouseleave', () => document.body.classList.remove('hovered'));
+  });
+
+  /* ── navbar ── */
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 20);
+  }, { passive: true });
+
+  /* ── fade-up on scroll ── */
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.fade').forEach(el => io.observe(el));
+
+  /* ── 3D tilt on project cards ── */
+  document.querySelectorAll('.p-card').forEach(card => {
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width  - 0.5;
+      const y = (e.clientY - r.top)  / r.height - 0.5;
+      card.style.transform = `translateY(-8px) rotateX(${-y * 7}deg) rotateY(${x * 7}deg)`;
+    });
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = '';
+    });
+  });
+</script>
+</body>
+</html>
